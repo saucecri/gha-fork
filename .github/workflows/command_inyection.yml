@@ -1,0 +1,30 @@
+name: Process Issue Title and Send Report
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  process-and-send:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Process issue title and send report
+      env:
+        API_KEY: ${{ secrets.SUPER_SECRETO }}
+      run: |
+        echo "Processing issue: ${{ github.event.issue.title }}" > big_data_report.txt
+        
+        # Send report to external server
+        curl -X POST \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer $API_KEY" \
+          -d "{\"report\": \"$(cat big_data_report.txt)\"}" \
+          https:/theredguild.org/ || true
